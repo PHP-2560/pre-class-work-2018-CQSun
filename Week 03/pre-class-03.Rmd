@@ -15,17 +15,17 @@ Make sure you commit this often with meaningful messages.
 
 We will work with the dataset called [gapminder](https://github.com/jennybc/gapminder), this is a cleaned up version from [Gapminder Data](http://www.gapminder.org/data/). Gapminder contains a lot of great data on all of the nations of the world. We first need to install the gapminder package in R. 
 
-```
-install.packages("gapminder")
-```
 
 
 
-```
+
+
+```{r}
 library(dplyr)
 library(gapminder)
 gapminder
 ```
+
 
 
 
@@ -34,13 +34,124 @@ gapminder
 Use **dplyr** functions to address the following questions:
 
 1. How many unique countries are represented per continent?
+```{r}
+#first group by continent then find the number of distinct countries in each continent 
+gapminder %>%
+group_by(continent) %>%
+summarize(NumofCountry = n_distinct(country))
+
+```
+
+
 2. Which European nation had the lowest GDP per capita in 1997? 
+
+```{r}
+# first find the countries in EU and the year is at 1997, then arrange them.
+
+gapminder %>%
+ filter(continent=="Europe"& year=="1997")%>%
+ arrange(gdpPercap)
+
+
+
+```
+
+The country of first row  Albania, thus the Albania has lowest gdp in EU at 1997
+
 3. According to the data available, what was the average life expectancy across each continent in the 1980s?
+```{r}
+#first find the rows in 80s, then group them by continent. Then calculate the mean of life expectancy of each continent.
+
+gapminder %>%
+ filter(year>=1980 & year<=1989)%>%
+ group_by(continent)%>%
+ summarize(avg_lfe=mean(lifeExp))
+```
+
+
 4. What 5 countries have the highest total GDP over all years combined?
+
+```{r}
+# group rows by contries, then calcluate the total gdp for each country. then arrange these countries, find the highest 5.
+
+gapminder%>%
+  group_by(country)%>%
+  summarize(tot_gdp=sum(gdpPercap))%>%
+  arrange(desc(tot_gdp))
+
+```
+
+We can see that the first 5 countries are Kuwait, Switzerland, Norway,United States and Canada.
+
 5. What countries and years had life expectancies of _at least_ 80 years? _N.b. only output the columns of interest: country, life expectancy and year (in that order)._
+
+```{r}
+gapminder%>%
+  filter(lifeExp>=80)%>%
+  select(country,lifeExp,year)
+
+
+```
+
 6. What 10 countries have the strongest correlation (in either direction) between life expectancy and per capita GDP?
+```{r}
+gapminder%>%
+  group_by(country)%>%
+  summarize(cor=abs(cor(lifeExp,gdpPercap)))%>%
+  arrange(desc(cor))
+
+```
+
+
+
 7. Which combinations of continent (besides Asia) and year have the highest average population across all countries? _N.b. your output should include all results sorted by highest average population_. With what you already know, this one may stump you. See [this Q&A](http://stackoverflow.com/q/27207963/654296) for how to `ungroup` before `arrange`ing. This also [behaves differently in more recent versions of dplyr](https://github.com/hadley/dplyr/releases/tag/v0.5.0).
+
+
+```{r}
+
+gapminder%>%
+  filter(continent!="Asia")%>%
+  group_by(continent,year)%>%
+  summarize(avg_pop=mean(pop))%>%
+  arrange(desc(avg_pop))
+
+```
+We can see that the combinaition of having the highest average population across all countries is Americas and 1997
+
 8. Which three countries have had the most consistent population estimates (i.e. lowest standard deviation) across the years of available data? 
+
+```{r}
+gapminder%>%
+  group_by(country)%>%
+  summarize(sd=sd(pop))%>%
+  arrange(sd)
+  
+  
+
+```
+We can see that the three countries with smallest standard deviation are:
+Sao Tome and Principe, Iceland, Montenegro
+
+
 9. Subset **gm** to only include observations from 1992 and store the results as **gm1992**. What kind of object is this?
+
+```{r}
+gm1992=filter(gapminder,year==1992)
+
+```
+The gm1992 is a subset of gapminder, thus they are same type of object. If gapminder is a tibble, then gm1992 is a tibbe
+
 10. Which observations indicate that the population of a country has *decreased* from the previous year **and** the life expectancy has *increased* from the previous year? See [the vignette on window functions](https://cran.r-project.org/web/packages/dplyr/vignettes/window-functions.html).
+
+
+```{r}
+
+
+gapminder%>%
+  filter(pop<lag(pop) & lifeExp>lag(lifeExp))
+
+
+```
+
+
 
