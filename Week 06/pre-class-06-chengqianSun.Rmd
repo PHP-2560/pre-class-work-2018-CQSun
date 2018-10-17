@@ -65,8 +65,7 @@ To make this two functions more consistent. When we use `mvnorm()`, we can let '
 rn=rnorm(1000,5,4)
 mn=mvrnorm(1000,5,16)
 qqplot(rn,mn)
-#based on qqnorm, the samples generated from these two function 
-#are simmilar.
+#based on qqnorm, the samples generated from these two function are simmilar.
 
 ```
 
@@ -85,10 +84,10 @@ vapply(mtcars, function(x) {sd(x)}, numeric(1))
      b. Compute the standard deviation of every numeric column in a mixed data frame. (Hint: you’ll need to use vapply() twice.)
 ```{r}
 #4(b)
+# first build a dataframe that contains non-numeric varaible
 string=rep("hello",nrow(mtcars))
 newdata=cbind(mtcars,string)
 newdata
-#first find coloums are numeric, then calculate the sd of these coloums
 vapply(newdata[vapply(newdata, is.numeric, logical(1))], sd, numeric(1))
 ```
 
