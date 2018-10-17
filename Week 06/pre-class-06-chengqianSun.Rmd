@@ -32,7 +32,7 @@ f2 <- function(x) {
 f2(x), return an vector that removes the last object of x. However, if there
 are less or equal to 1 object in x. f2(x) will return NULL
 I would like to call this function as "RemoveLast"
-````
+```
 f3 <- function(x, y) {
   rep(y, length.out = length(x))
 }
