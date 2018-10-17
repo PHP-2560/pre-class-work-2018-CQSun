@@ -16,20 +16,79 @@ knitr::opts_chunk$set(echo = TRUE)
 f1 <- function(string, prefix) {
   substr(string, 1, nchar(prefix)) == prefix
 }
+```
+The input parameters of this function are two strings, and it return a
+boolean variable.
+f1 (a,b) is the function to judge that whether b is a prefix of a.
+Which means to judge if one string is the beginning of the other string.
+I would like to call f1 as "ifPrefix"
+
+```
 f2 <- function(x) {
   if (length(x) <= 1) return(NULL)
   x[-length(x)]
 }
+```
+f2(x), return an vector that removes the last object of x. However, if there
+are less or equal to 1 object in x. f2(x) will return NULL
+I would like to call this function as "RemoveLast"
+````
 f3 <- function(x, y) {
   rep(y, length.out = length(x))
 }
 ```
 
-2. Compare and contrast rnorm() and MASS::mvrnorm(). How could you make them more consistent?
+f3(x,y) will return a vector that has same length of x, and all obejects in that vector 
+are objects of y. If x is shorter than y, it will return the first n=length(x) objects 
+of y. If x is longer than y, the returned vector will recycle the y.
+I would like to call it "ReplicateY"
 
+
+2. Compare and contrast rnorm() and MASS::mvrnorm(). How could you make them more consistent?
+```{r}
+?rnorm()
+?mvnorm()
+```
+
+Based on the description of these two functions.
+`rnorm(n,mean,sd)`generates n random sampels from normal distribution with mean=mean, and standard
+devaition=sd. 
+`mvnorm(n,mu,Sigma)` generates n samples from multivariate normal distribution. Where mu is a vector giving the means of the variables, and Sigma is a positive-definite symmetric matrix specifying the covariance matrix of the variables.
+We can see that these two functions generates random samples based on different distribution.
+and 'sd' in `rnorm()` is a vector of sandarad devations. However, 'Sigma' in `mvrnorm()` is
+positive-definite symmetric matrix specifying the covariance matrix of the variables, which is
+not a standarad devation. 
+To make this two functions more consistent. When we use `mvnorm()`, we can let 'mu' equals to
+'mean' in rnorm(), and 'Sigma' equals to sd^2, where sd is standard devation in `rnorm`
+
+```{r}
+rn=rnorm(1000,5,4)
+mn=mvrnorm(1000,5,16)
+qqplot(rn,mn)
+#based on qqnorm, the samples generated from these two function 
+#are simmilar.
+
+```
 
 3. Use `lapply()` and an anonymous function to find the coefficient of variation (the standard deviation divided by the mean) for all columns in the mtcars dataset. 
 
+```{r}
+lapply(mtcars, function(x){mean(x)/sd(x)})
+```
+
 4. Use vapply() to:
     a. Compute the standard deviation of every column in a numeric data frame.
-    b. Compute the standard deviation of every numeric column in a mixed data frame. (Hint: you’ll need to use vapply() twice.)
+```{r}
+#4(a)
+vapply(mtcars, function(x) {sd(x)}, numeric(1))
+```
+     b. Compute the standard deviation of every numeric column in a mixed data frame. (Hint: you’ll need to use vapply() twice.)
+```{r}
+#4(b)
+string=rep("hello",nrow(mtcars))
+newdata=cbind(mtcars,string)
+newdata
+#first find coloums are numeric, then calculate the sd of these coloums
+vapply(newdata[vapply(newdata, is.numeric, logical(1))], sd, numeric(1))
+```
+
