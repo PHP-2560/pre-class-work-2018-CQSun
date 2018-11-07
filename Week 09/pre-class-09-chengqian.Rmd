@@ -1,0 +1,87 @@
+---
+title: "Basic Webscraping"
+---
+
+<style type="text/css">
+.table {
+
+    width: 80%;
+    margin-left:10%; 
+    margin-right:10%;
+}
+</style>
+```{r,setup, echo=FALSE, cache=TRUE}
+## numbers >= 10^5 will be denoted in scientific notation,
+## and rounded to 2 digits
+options(scipen = 3, digits = 3)
+```
+
+
+
+## Exercises
+
+1. Read the HTML content of the following URL with a variable called webpage: https://money.cnn.com/data/us_markets/ At this point, it will also be useful to open this web page in your browser.
+```{r}
+library(xml2)
+library(rvest)
+library(httr)
+webpage<-read_html("https://money.cnn.com/data/us_markets/")
+
+```
+
+2. Get the session details (status, type, size) of the above mentioned URL.
+```{r}
+session <- html_session("https://money.cnn.com/data/us_markets/")
+session
+```
+
+3. Extract all of the sector names from the “Stock Sectors” table (bottom left of the web page.)
+```{r}
+html_table(html_nodes(webpage,"table"))
+html_table(html_nodes(webpage,"table")[[2]])
+names=html_table(html_nodes(webpage,"table")[[2]])[,1]
+```
+
+4. Extract all of the “3 Month % Change” values from the “Stock Sectors” table.
+```{r}
+html_table(html_nodes(webpage,"table"))[[2]]
+m_change=html_table(html_nodes(webpage,"table")[[2]])[,2]
+m_change
+```
+
+5. Extract the table “What’s Moving” (top middle of the web page) into a data-frame.
+```{r}
+whatsmov=html_table(html_nodes(webpage,"table")[[1]])
+whatsmov
+```
+
+6. Re-construct all of the links from the first column of the “What’s Moving” table.
+Hint: the base URL is “https://money.cnn.com”
+```{r}
+hn <- html_nodes(webpage, css="td .wsod_symbol")
+paste("https://money.cnn.com", html_attr(hn, "href"))
+```
+
+7. Extract the titles under the “Latest News” section (bottom middle of the web page.)
+```{r}
+
+html_text(html_nodes(webpage, ".HeadlineList a"))
+```
+
+8. To understand the structure of the data in a web page, it is often useful to know what the underlying attributes are of the text you see.Extract the attributes (and their values) of the HTML element that holds the timestamp underneath the “What’s Moving” table.
+```{r}
+html_attrs(html_nodes(webpage,".wsod_disclaimer span"))[[1]]
+```
+
+
+9. Extract the values of the blue percentage-bars from the “Trending Tickers” table (bottom right of the web page.)
+Hint: in this case, the values are stored under the “class” attribute.
+```{r}
+html_attr(html_nodes(webpage, ".scale div"), "class")
+```
+
+10. Get the links of all of the “svg” images on the web page.
+```{r}
+html_attr(html_nodes(webpage, "img[src$='svg']"), "src")
+```
+
