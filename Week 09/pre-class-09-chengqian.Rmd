@@ -58,7 +58,7 @@ whatsmov
 6. Re-construct all of the links from the first column of the “What’s Moving” table.
 Hint: the base URL is “https://money.cnn.com”
 ```{r}
-hn <- html_nodes(webpage, css="td .wsod_symbol")
+hn=html_nodes(webpage, css="td .wsod_symbol")
 paste("https://money.cnn.com", html_attr(hn, "href"))
 ```
 
